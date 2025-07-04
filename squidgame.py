@@ -1,10 +1,13 @@
 import random
 
-players = [] # number of players
+players = [] # list of all players
 
 class Agent:
-  def __init__(self, id, morals, physical, mental, debt, stress, trauma, motiv, loyalty, similarity_bias):
+  def __init__(self, id, age, gender, morals, physical, mental, debt, stress, trauma, motiv, loyalty):
     self.id = id # player identification number
+
+    self.age = age
+    self.gender = gender
 
     self.morals = morals # morality
     self.physical = physical # physical abilities (0-100)
@@ -17,14 +20,13 @@ class Agent:
     self.motiv = motiv # motivation
 
     self.loyalty = loyalty # how loyal you are to friends
-    self.similarity_bias = similarity_bias # bias to cooperating with similar people
+    # self.similarity_bias = similarity_bias # bias to cooperating with similar people
 
-  def chance(self, attr): # outputs True or False
-    value = random.random()
+  def kill(self, id):
+    for player in players:
+      if player.id == id:
+        players.remove(player)
 
-    if value >= self.attr:
-      return True
-    
-    return False
-  
-player1 = Agent()
+        break
+
+    print(f"Player {self.id} has eliminated Player {player.id}")
