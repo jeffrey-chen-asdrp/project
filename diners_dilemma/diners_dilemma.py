@@ -24,7 +24,7 @@ class DinersDilemmaEnv(AECEnv):
 
         self.action_spaces = {agent: Discrete(2) for agent in self.agents}
         self.observation_spaces = {
-            agent: Box(low=0, high=1, shape=(1,), dtype=np.float32)
+            agent: Box(low=0, high=1, shape=(self.num_agents,), dtype=np.float32)
             for agent in self.agents
         }
 
@@ -55,6 +55,8 @@ class DinersDilemmaEnv(AECEnv):
         self.agent_selection = self.agent_selector.next()
         self.actions = {}
         self.terminated = False
+
+        self.rewards = self._rewards.copy()
 
         self._rewards = {agent: 0 for agent in self.agents}
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
@@ -90,7 +92,6 @@ class DinersDilemmaEnv(AECEnv):
             self.dones[agent] = True
 
         self.terminated = True
-        print("Resolved Round")
 
     def render(self):
         print("Actions:", self.actions)
@@ -98,4 +99,10 @@ class DinersDilemmaEnv(AECEnv):
 
     def close(self):
         pass
-    
+
+    def observation_space(self, agent):
+        return self.observation_spaces[agent]
+
+    def action_space(self, agent):
+        return self.action_spaces[agent]
+
