@@ -16,7 +16,7 @@ vec_env = ss.concat_vec_envs_v1(vec_env, num_vec_envs=1, base_class="stable_base
 vec_env = VecMonitor(vec_env)
 
 # Configure logger with csv output
-log_folder = "./ppo_diners/"
+log_folder = "ppo_diners/"
 new_logger = configure(log_folder, ["stdout", "csv", "tensorboard"])
 
 # Initialize PPO with vectorize env
