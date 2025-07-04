@@ -30,3 +30,42 @@ class Agent:
         break
 
     print(f"Player {self.id} has eliminated Player {player.id}")
+
+  def relationship_chance(self, player): # returns 0-100
+    age_dif = self.age - player.age # less difference equals higher chance
+
+    if self.gender == player.gender:
+      genders = 0
+
+    else:
+      genders = 15
+    
+    moral_dif = self.morals - player.morals # less difference equals higher chance
+    mental_dif = self.mental - player.mental # less difference equals higher chance
+
+    if 40 - abs(age_dif) < genders:
+      age_gender_var = 0
+    
+    else:
+      age_gender_var = 40 - abs(age_dif) - genders
+
+
+    if 30 - abs(moral_dif) < 0:
+      morals_var = 0
+
+    morals_var = 30 - abs(moral_dif)
+
+
+    if 30 - abs(mental_dif) < 0:
+      mental_var = 0
+
+    mental_var = 30 - abs(mental_dif)
+
+    chance = age_gender_var + morals_var + mental_var
+
+    return chance
+  
+Player1 = Agent(1, 36, "Male", 90, 70, 86, 1000, 2, 0, 60, 90)
+Player2 = Agent(2, 51, "Male", 97, 96, 91, 100, 0, 0, 0, 0)
+
+print(Player1.relationship_chance(Player2))
