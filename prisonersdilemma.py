@@ -13,6 +13,7 @@ class QLearningAgent:
         # Epsilon-greedy: Explore or exploit
         if random.random() < self.epsilon:
             action = random.choice(["cooperate", "defect"])
+
         else:
             action = min(self.q_table, key=self.q_table.get)
         self.last_action = action
@@ -53,7 +54,7 @@ def play_q_game(agent1, agent2):
 
     return reward1, reward2
 
-for i in range(200):
+for i in range(100):
     play_q_game(agent1, agent2)
     print(f"Agent1 Cooperate EV: {agent1.q_table['cooperate']}")
     print(f"Agent1 Defect EV: {agent1.q_table['defect']}")

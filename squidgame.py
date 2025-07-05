@@ -77,7 +77,7 @@ class Agent:
     if 30 - moral_dif < 0:
       morals_var = 0
 
-    morals_var = 30 - moral_dif
+     morals_var = 30 - moral_dif
 
     if 30 - mental_dif < 0:
       mental_var = 0
