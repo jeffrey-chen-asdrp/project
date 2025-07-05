@@ -29,15 +29,17 @@ class Agent:
     self.voting_history = [] # tracks voting history
 
   def choose_violence(self, player): # chooses what action they take (punch, stab, choke, do nothing)
-    chance = 0 # (<20<45 punch, <45<)
-    # Morals 40%
-    # Physical intimidation (difference from your trait and the player's trait along with age difference) 10%
-    # Motivation 30%
-    # Stress 20% (more stress equals less chance of killing someone)
+    # (<20<45 punch, <45<)
+    # Morals 15%
+    # Physical intimidation (difference from your trait and the player's trait along with age difference) 15%
+    # Motivation 35%
+    # Awareness 35% (awareness in understanding when to kill/attack)
+
+    # self.awareness = 
 
     intimidation = self.physical - player.physical # positive value indicates you are not scared, negative means you are
 
-    chance += 40 * self.morals/100 + 10 * intimidation/100 + 30 * self.motivation/100 + 20 * self.stress/100
+    chance = 15 * (100-self.morals)/100 + 15 * intimidation/100 + 35 * self.motiv/100 + 35 * self.awareness/100
 
     return chance
     
@@ -117,7 +119,8 @@ class Agent:
 
     return "Yes"
 
-Player1 = Agent(1, 33, "Male", 93, 82, 90, 81, 84, 3, 15)
+Player1 = Agent(1, 33, "Male", 93, 82, 80, 1000, 84, 80, 70)
 Player2 = Agent(2, 41, "Male", 90, 82, 81, 66, 90, 17, 26)
+# id, age, gender, morals, physical, mental, debt, motiv, loyalty
 
 print(Player1.choose_violence(Player2))
