@@ -23,23 +23,39 @@ class Agent:
     self.loyalty = loyalty # how loyal you are to friends
     # self.similarity_bias = similarity_bias # bias to cooperating with similar people
 
-    self.inventory = [] # can include knives, punch, forks, etc.
+    self.inventory = [] # can include knives, punch, forks, etc, assume they all start with a knife
 
     self.relationships = [] # every player with a relationship would be modeled with [{"player": Agent, "strength": number}]
     self.voting_history = [] # tracks voting history
 
-  def choose_violence(self, player):
-    # Morals
-    # Physical (difference from your trait and the player's trait)
-    # Age
-    # Motivation
+  def choose_violence(self, player): # chooses what action they take (punch, stab, choke, do nothing)
+    chance = 0 # (<20<45 punch, <45<)
+    # Morals 40%
+    # Physical intimidation (difference from your trait and the player's trait along with age difference) 10%
+    # Motivation 30%
+    # Stress 20% (more stress equals less chance of killing someone)
+
+    intimidation = self.physical - player.physical # positive value indicates you are not scared, negative means you are
+
+    chance += 40 * self.morals/100 + 10 * intimidation/100 + 30 * self.motivation/100 + 20 * self.stress/100
+
+    return chance
     
     # Punch: hp - 10, gain stress, mental decreases, morals decrease, physical decrease, motiv increases
     # Stab: hp - 35, gain more stress, mental decreases more, morals decrease a lot, physical decreases a lot, motiv decreases a lot
     # Choke: hp - 100, survival chance 4%, if survives moral decreases, physical increases, stress increase, motiv increases
 
+  def choke(self, id):
+    for player in players:
+      if player.id == id:
+        players.remove(player)
+
+        print(f"Player {self.id} has eliminated Player {player.id}")
+
+        break
+
   def relationship_chance(self, player): # returns 0-100
-    age_dif = self.age - player.age # less difference equals higher chance
+    age_dif = abs(self.age - player.age) # less difference equals higher chance
 
     if self.gender == player.gender: 
       gender_dif = 0
@@ -47,24 +63,24 @@ class Agent:
     else:
       gender_dif = 15
 
-    if 40 - abs(age_dif) < gender_dif:
+    if 40 - age_dif < gender_dif:
       age_gender_var = 0
     
     else:
-      age_gender_var = 40 - abs(age_dif) - gender_dif
+      age_gender_var = 40 - age_dif - gender_dif
 
-    moral_dif = self.morals - player.morals # less difference equals higher chance
-    mental_dif = self.mental - player.mental # less difference equals higher chance
+    moral_dif = abs(self.morals - player.morals) # less difference equals higher chance
+    mental_dif = abs(self.mental - player.mental) # less difference equals higher chance
 
-    if 30 - abs(moral_dif) < 0:
+    if 30 - moral_dif < 0:
       morals_var = 0
 
-    morals_var = 30 - abs(moral_dif)
+    morals_var = 30 - moral_dif
 
-    if 30 - abs(mental_dif) < 0:
+    if 30 - mental_dif < 0:
       mental_var = 0
 
-    mental_var = 30 - abs(mental_dif)
+    mental_var = 30 - mental_dif
 
     chance = age_gender_var + morals_var + mental_var
 
@@ -101,21 +117,7 @@ class Agent:
 
     return "Yes"
 
-Player1 = Agent(1, 33, "Male", 93, 82, 90, 81, 84, 3, 15, 30)
-Player2 = Agent(2, 41, "Male", 90, 82, 81, 66, 90, 17, 26, 35)
+Player1 = Agent(1, 33, "Male", 93, 82, 90, 81, 84, 3, 15)
+Player2 = Agent(2, 41, "Male", 90, 82, 81, 66, 90, 17, 26)
 
-print(Player1.vote())
-
-
-
-"""
-def kill(self, id):
-    for player in players:
-      if player.id == id:
-        players.remove(player)
-
-        print(f"Player {self.id} has eliminated Player {player.id}")
-
-        break
-"""
-#KILL FUNCTION FOR SQUID GAME CLASS AGENT (class Game:)
+print(Player1.choose_violence(Player2))
