@@ -9,8 +9,8 @@ class DinersDilemmaRLEnv(MultiAgentEnv):
         self._num_agents = cfg.get("num_agents", 10)
         self._max_steps = cfg.get("max_steps", 200)
 
-        self.dish_rewards = [3, 8]
-        self.dish_costs = [2, 6]
+        self.dish_rewards = [3, 8] # default [3, 8]
+        self.dish_costs = [2, 6]   # default [2, 6]
         self.step_count = 0
 
         self.agents = [f"agent_{i}" for i in range(self._num_agents)]
@@ -29,8 +29,6 @@ class DinersDilemmaRLEnv(MultiAgentEnv):
 
     def step(self, action_dict):
         self.step_count += 1
-        ones = sum(action_dict.values())
-        zeros = self._num_agents - ones
 
         total_cost = sum(self.dish_costs[action] for action in action_dict.values())
         shared_cost = total_cost / self._num_agents

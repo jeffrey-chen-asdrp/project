@@ -35,9 +35,9 @@ config = (
         num_envs_per_env_runner=1
     )
     .training(
-        lr=0.02,
+        lr=1e-5,
         train_batch_size_per_learner=2000,
-        num_epochs=10,
+        num_epochs=5,
     )
     .callbacks(callbacks_class=ActionLoggingCallbacks)
 )

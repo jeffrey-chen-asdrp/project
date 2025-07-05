@@ -12,10 +12,11 @@ class ActionLoggingCallbacks(RLlibCallback):
             agent: float(np.mean(agent_actions))
             for agent, agent_actions in actions.items()
         }
+        print('avg_actions: ', avg_actions)
 
         # Fieldnames: 'episode_id', agent IDs...
         fieldnames = sorted(avg_actions.keys())
-        filename = "actions_log.csv"
+        filename = "./diners_dilemma/actions_log.csv"
         file_exists = os.path.exists(filename)
 
         with open(filename, "a", newline="") as f:
@@ -24,4 +25,4 @@ class ActionLoggingCallbacks(RLlibCallback):
                 writer.writeheader()
             writer.writerow(avg_actions)
         
-        print("Logged avg actions:", avg_actions)
+        
