@@ -42,11 +42,11 @@ def play_q_game(agent1, agent2):
     if move1 == "cooperate" and move2 == "cooperate":
         reward1, reward2 = 5, 5
     elif move1 == "cooperate" and move2 == "defect":
-        reward1, reward2 = 0, 20
+        reward1, reward2 = 2, 20
     elif move1 == "defect" and move2 == "cooperate":
-        reward1, reward2 = 20, 0
+        reward1, reward2 = 20, 2
     else:
-        reward1, reward2 = 1, 1
+        reward1, reward2 = 3, 3
 
     agent1.learn(reward1)
     agent2.learn(reward2)
@@ -55,5 +55,5 @@ def play_q_game(agent1, agent2):
 
 for i in range(200):
     play_q_game(agent1, agent2)
-    print(agent1.q_table["cooperate"])
-    print(agent1.q_table["defect"])
+    print(f"Agent1 Cooperate EV: {agent1.q_table['cooperate']}")
+    print(f"Agent1 Defect EV: {agent1.q_table['defect']}")
