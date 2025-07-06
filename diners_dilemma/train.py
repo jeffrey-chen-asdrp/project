@@ -6,7 +6,9 @@ from env import DinersDilemmaRLEnv
 from pprint import pprint
 from callbacks import ActionLoggingCallbacks
 
-env = DinersDilemmaRLEnv({"num_agents":10})
+num_agents = 2
+
+env = DinersDilemmaRLEnv({"num_agents":num_agents})
 obs_space = env.observation_spaces["agent_0"]
 act_space = env.action_spaces["agent_0"]
 
@@ -17,7 +19,7 @@ register_env(env_name, lambda cfg: DinersDilemmaRLEnv(cfg))
 
 config = (
     PPOConfig()
-    .environment(env=env_name, env_config={"num_agents":10, "max_steps":200})
+    .environment(env=env_name, env_config={"num_agents":num_agents, "max_steps":200})
     .framework("torch")
     .multi_agent(
         policies={
@@ -44,6 +46,6 @@ config = (
 
 ppo = config.build_algo()
 
-for i in range(10):
+for i in range(20):
     result = ppo.train()
     print(f"Iter {i}: return_mean={result['env_runners']['episode_return_mean']:.4f}")

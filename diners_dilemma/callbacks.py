@@ -12,17 +12,25 @@ class ActionLoggingCallbacks(RLlibCallback):
             agent: float(np.mean(agent_actions))
             for agent, agent_actions in actions.items()
         }
-        print('avg_actions: ', avg_actions)
+        
+        total_return = float(episode.get_return())
 
-        # Fieldnames: 'episode_id', agent IDs...
-        fieldnames = sorted(avg_actions.keys())
-        filename = "./diners_dilemma/actions_log.csv"
+        row = {
+            **avg_actions,
+            "return": total_return
+        }
+
+        print('row: ', row)
+
+        agent_cols = sorted(k for k in row.keys() if k.startswith("agent_"))
+        fieldnames = agent_cols + ["return"]
+        filename = "./diners_dilemma/log_2_agents_[6,8][2,6].csv"
         file_exists = os.path.exists(filename)
 
         with open(filename, "a", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
-            writer.writerow(avg_actions)
+            writer.writerow(row)
         
         
