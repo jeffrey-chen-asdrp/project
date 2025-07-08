@@ -49,6 +49,27 @@ class Agent:
         self.relationships["trust"] += change
 
         return
+      
+class Round:
+  def __init__(self, agents, time):
+    self.agents = agents
+    self.voting = [] # {"id":player.id, "votes":[p2, p3]}
+
+    self.time = time
+
+    for agent in agents:
+      self.voting.append({"id":agent.id, "votes":[]})
+
+  def vote(self, p1, p2): # p1 votes for p2
+    for agent in self.voting:
+      if agent["id"] == p2.id:
+        agent["votes"].append(p1)
+
+        return
+      
+  def count_majority(self):
+    
+
 
 P1 = Agent(1, 20, "Male", 100, 100, 100, 100, 64, 100)
 P2 = Agent(2, 47, "Female", 100, 100, 100, 100, 97, 100)
