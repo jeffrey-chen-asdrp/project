@@ -6,7 +6,7 @@ from env import DinersDilemmaRLEnv
 from pprint import pprint
 from callbacks import ActionLoggingCallbacks
 
-num_agents = 2
+num_agents = 20
 
 env = DinersDilemmaRLEnv({"num_agents":num_agents})
 obs_space = env.observation_spaces["agent_0"]
@@ -42,10 +42,14 @@ config = (
         num_epochs=5,
     )
     .callbacks(callbacks_class=ActionLoggingCallbacks)
+    .resources(
+        num_gpus=1,
+        num_gpus_per_worker=1
+    )
 )
 
 ppo = config.build_algo()
 
-for i in range(20):
+for i in range(25):
     result = ppo.train()
     print(f"Iter {i}: return_mean={result['env_runners']['episode_return_mean']:.4f}")
