@@ -24,7 +24,7 @@ class ActionLoggingCallbacks(RLlibCallback):
 
         agent_cols = sorted(k for k in row.keys() if k.startswith("agent_"))
         fieldnames = agent_cols + ["return"]
-        filename = "./diners_dilemma/log_2_agents_[6,8][2,6].csv"
+        filename = "./diners_dilemma//data/25_iter_20_agents_[8,8][2,6].csv"
         file_exists = os.path.exists(filename)
 
         with open(filename, "a", newline="") as f:
