@@ -1,7 +1,8 @@
 import random
+import time
 
 class Agent:
-  def __init__(self, id, age, gender, physical, charisma, obedience, revenge_tendency, morals, aggression):
+  def __init__(self, id, age, gender, physical, charisma, obedience, revenge_tendency, similarity_bias, charisma_bias, indecisiveness, morals, aggression): # all traits 1-100
     self.id = id
 
     self.age = age
@@ -11,7 +12,12 @@ class Agent:
 
     self.charisma = charisma # more likely for others to follow your vote
     self.obedience = obedience # more likely to vote for majority rather than the player with the lowest relationship strength
-    self.revenge_tendency = revenge_tendency # more likely to vote for someone who voted for you
+    self.revenge_tendency = revenge_tendency # more likely to vote for someone who voted for you (50-100)
+
+    self.similarity_bias = similarity_bias # (50-100)
+    self.charisma_bias = charisma_bias
+
+    self.indecisiveness = indecisiveness/2 # (0-50)
 
     # Obedience is 65%, revenge tendency is 15%, similarity bias is 10%, charisma is 10%
 
@@ -54,7 +60,7 @@ class Agent:
   def make_relationships(self, players):
     for player in players:
       if self.id != player.id:
-        player.relationships.append({
+        self.relationships.append({
           "player": player,
           "trust": player.trust,
           "similarity": self.calc_similarity(player),
@@ -90,7 +96,16 @@ class Round:
       if agent["player"] == p2:
         agent["votes"].append(p1)
 
-        return
+    for relationship in p2.relationships:
+      if relationship["player"] == p1:
+        relationship["trust"] -= 30
+
+        if relationship["trust"] < 0:
+          relationship["trust"] = 0
+
+    self.has_voted.append(p1)
+
+    time.sleep(3 * (1+p1.indecisiveness/100)) # minimum is three seconds
       
   def count_majority(self):
     agents = []
@@ -116,11 +131,8 @@ class Round:
     targets = []
 
     for agent in self.voting:
-      if agent["player"] != player:
-        if player in agent["votes"]:
-          targets.append(agent["player"])
-
-    return targets # list
+      if agent["player"] == player:
+        return agent["votes"]
   
   def get_charisma(self, player):
     weights = []
@@ -148,77 +160,235 @@ class Round:
     choice = random.choices(population=population, weights=weights)
 
     return choice[0] # since choice is in [choice] format, use choice[0] to exclude the list
+  
+  def get_fighter(self):
+    weights = []
+    population = []
+
+    for agent in self.agents:
+      weights.append(agent.aggression)
+
+    weights = sorted(weights)
+
+    for weight in weights:
+      for agent in self.agents:
+        if agent.aggression == weight:
+          population.append(agent)
+
+          break
+
+    if len(weights) >= 3: # give extra weights to top 3 agents with high charisma
+      weights[-1] *= 2
+      weights[-2] *= 1.5
+      weights[-3] *= 1.2
+
+    choice = random.choices(population=population, weights=weights)
+
+    return choice[0] # since choice is in [choice] format, use choice[0] to exclude the list
+  
+  def get_victim(self):
+    return random.choice(self.agents)
 
   def round(self):
     self.create_all_relationships()
 
-    players = random.shuffle(self.agents) # shuffles the order in which they go
+    players = self.agents
+    random.shuffle(players) # shuffles the order in which they go
 
-    for index, player in enumerate(players):
-      relationships = []
-      relationship_strengths = []
+    start = time.time()
+    end = time.time()
 
-      for relationship in self.relationships:
-        relationships.append(relationship)
-        relationship_strengths.append(player.calc_relationship(relationship["player"]))
+    self.has_voted = []
 
-      index = relationship_strengths.index(min(relationship_strengths))
-      target = relationships[index]
+    while end - start < self.time:
+      for i, player in enumerate(players):
+        relationships = []
+        relationship_strengths = []
 
-      if index == 0: # check if player is first to vote
-        self.vote(player, target)
+        for relationship in player.relationships:
+          relationships.append(relationship["player"])
+          relationship_strengths.append(player.calc_relationship(relationship["player"]))
 
-      else:
-        if player == self.count_majority(): # revenge 80% similarity 20%
-          if random.random() <= 0.8: # selected revenge
-            targets = self.get_revenge(player)
-            target = random.choice(targets)
+        index = relationship_strengths.index(min(relationship_strengths))
+        target = relationships[index]
 
-            self.vote(player, target)
+        fight = False
 
-          else: # similarity selected
-            self.vote(player, target)
+        end = time.time()
+
+        if end - start >= self.time * 2/3: # check if fight should happen
+          chance = random.random()
+
+          if chance <= 35:
+            fight = True
+
+            break
+
+        if end - start >= self.time * 4/5:
+          chance = random.random
+
+          if chance <= 95:
+            fight = True
+
+            break
+
+        if i == 0: # check if player is first to vote
+          self.vote(player, target)
+
+          print(f"Player {player.id} has voted for Player {target.id}")
 
         else:
-          if random.random() <= 0.65: # obedience selected lowkey should do random.choices
-            target = self.count_majority()
+          was_voted = False
 
-            self.vote(player, target)
+          for agent in self.voting:
+            if agent == player:
+              if len(agent["votes"]) > 0:
+                was_voted = True
 
-          elif random.random() <= 0.8: # revenge selected
-            targets = self.get_revenge(player)
-            target = random.choice(targets)
-
-            self.vote(player, target)
-
-          elif random.random() <= 0.9: # similarity bias selected
-            self.vote(player, target)
-
-          else: # charisma bias selected
-            target = self.get_charisma(player)
-
-            self.vote(player, target)
-
+                break
           
+          if player == self.count_majority(): # revenge 80% similarity 20%
+            # formula = random.choices(population=["P1","P2"], weights=[80*(1-(avg-value))])
+            choice = random.choices(population=["revenge","similarity"], weights=[80*(1-(75-player.revenge_tendency)/100), 20*(1-(75-player.similarity_bias)/100)])
+            
+            if choice[0] == "revenge": # selected revenge 
+              targets = self.get_revenge(player)
+              target = random.choice(targets)
+
+              self.vote(player, target)
+
+              print(f"Player {player.id} has voted for Player {target.id}")
+
+            else: # similarity selected
+              self.vote(player, target)
+
+              print(f"Player {player.id} has voted for Player {target.id}")
+
+          else:
+            if was_voted:
+              choice = random.choices(population=["obedience","revenge","similarity","charisma"], weights=[65*(1-(75-player.obedience)/100), 15*(1-(75-player.revenge_tendency)/100), 10*(1-(75-player.similarity_bias)/100), 10*(1-(75-player.charisma_bias)/100)])
+
+            else:
+              choice = random.choices(population=["obedience","similarity","charisma"], weights=[50*(1-(75-player.obedience)/100), 25*(1-(75-player.similarity_bias)/100), 25*(1-(75-player.charisma_bias)/100)])
+            
+            if choice[0] == "obedience":
+              target = self.count_majority()
+
+              self.vote(player, target)
+
+              print(f"Player {player.id} has voted for Player {target.id}")
+
+            elif choice[0] == "revenge":
+              targets = self.get_revenge(player)
+              target = random.choice(targets)
+
+              self.vote(player, target)
+
+              print(f"Player {player.id} has voted for Player {target.id}")
+
+            elif choice[0] == "similarity": # similarity bias selected
+              self.vote(player, target)
 
 
+              print(f"Player {player.id} has voted for Player {target.id}")
 
+            else: # charisma bias selected
+              target = self.get_charisma(player)
 
-  #   surviving_players = []
-  #   for player in players:
-  #       survival_chance = player.physical/100
-  #       if random.random() < survival_chance:
-  #           surviving_players.append(player)
-  #           print(f"Player {player.id} survived.")
-  #       else:
-  #           print(f"Player {player.id} was eliminated")
-  #   print{f"\n {len(surviving_players)} players remain"}
+              self.vote(player, target)
 
+              print(f"Player {player.id} has voted for Player {target.id}")
 
-P1 = Agent(1, 20, "Male", 100, 100, 100, 100, 64, 100)
-P2 = Agent(2, 47, "Female", 100, 100, 100, 100, 97, 100)
-P3 = Agent(3, 15, "Male", 98, 100, 70, 86, 97, 100)
-P4 = Agent(4, 65, "Female", 100, 100, 80, 100, 97, 100)
+      if i+1 == len(players): # every player has voted
+        player = self.count_majority() # majority player
 
-game1 = Round([P1, P2, P3, P4], 90)
+        self.eliminate(player)
+
+        print(f"Player {player.id} has been eliminated as the majority of the vote")
+
+        self.survivors = self.agents
+
+        return
+
+      elif fight:
+        fighter = self.get_fighter()
+        victim = self.get_victim()
+
+        if fighter.physical >= victim.physical:
+          self.eliminate(victim)
+
+          print(f"Player {victim.id} has been pushed off by Player {fighter.id} in a fight")
+
+          for agent in self.agents:
+            if agent != fighter:
+              for relationship in agent.relationships:
+                if relationship["player"] == fighter:
+                  relationship["trust"] -= 25
+
+          self.survivors = self.agents
+
+          return
+
+        else:
+          self.eliminate(fighter)
+
+          print(f"Player {fighter.id} has been pushed off by Player {victim.id} in a fight")
+
+          self.survivors = self.agents
+
+          return
+
+      end = time.time()
+
+    if len(players) == len(self.agents): # no players were eliminated within time
+      for agent in self.agents:
+        self.eliminate(agent) # every player ends up eliminated
+        
+        print(f"Player {agent.id} has been eliminated")
+
+        self.survivors = self.agents
+
+        return
+
+players = []
+id = 1
+
+for i in range(20):
+  # id, age, gender, physical, charisma, obedience, revenge_tendency, similarity_bias, charisma_bias, indecisiveness, morals, aggression
+
+  age = random.randint(18, 70)
+  gender = random.choice(["Male", "Female"])
+
+  physical = random.randint(20, 100)
+
+  charisma = random.randint(50, 100)
+  obedience = random.randint(50, 100)
+  revenge_tendency = random.randint(50, 100)
+  similarity_bias = random.randint(50, 100)
+  charisma_bias = random.randint(50, 100)
+
+  indecisiveness = random.randint(1, 100)
+  
+  morals = random.randint(1, 100)
+
+  aggression = random.randint(1, 100)
+
+  player = Agent(id, age, gender, physical, charisma, obedience, revenge_tendency, similarity_bias, charisma_bias, indecisiveness, morals, aggression)
+  players.append(player)
+
+  id += 1
+
+print("Round 1 starting...")  
+
+game1 = Round(players, 120)
 game1.round()
+
+print("Round 2 starting...")
+
+game2 = Round(game1.survivors, 120)
+game2.round()
+
+print("Round 3 starting...")
+
+game3 = Round(game2.survivors, 120)
+game3.round()

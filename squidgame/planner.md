@@ -29,7 +29,8 @@
 
 - SCORE WILL BE CALCULATED WITH PLACEMENT; LAST PLACE WILL BE 1/12, while FIRST PLACE WILL BE 12/12 (1.00)
 
-
+- In case of a tie in voting, if the number of players who tie for elimination are outnumbered by the rest of the players not facing elimination, they will be voted out
+- Lets say there are 5 players left, with 2 of them being tied for elimination. This leaves three players left and since the 2 players are outnumbered, they both are eliminated
 
 # MINGLE RULES:
 
