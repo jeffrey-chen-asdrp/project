@@ -27,7 +27,51 @@ class Agent:
 
     self.relationships = [] # every player with a relationship would be modeled with [{"player": Agent, "strength": number}]
     self.voting_history = [] # tracks voting history
-
+    self.shared_with = [] # {sharer_id: boost_amount}
+  def share_info(self, group, share_factor = 0.20):
+    for ally in group:
+        if ally is self:
+            continue
+        if ally.mental < self.mental:
+            gap = self.mental - ally.mental
+            boost = int(gap * share_factor)
+            if boost > 0:
+                ally.mental += boost
+                ally.shared_with[self.id] = boost  # track boost source
+                print(f"Player {self.id} shared {boost} intelligence with Player {ally.id}")
+  def reset_shared_boosts(group):
+    for agent in group:
+      for sharer_id, boost in agent.shared_with.items():
+        agent.mental -= boost
+      agent.shared_with.clear()
+  def score(ally):
+    if ally is self:
+        return -1
+    # Age and Gender calculation
+    age_diff = abs(self.age - ally.age)
+    gender_diff = 15 if self.gender != ally,gender else 0
+    age_gender_sim = max(0, 100 - (age_diff + gender_diff))
+    # Moral Calculation
+    moral_diff = abs(self.moral - ally.morals)
+    moral_sim = max(0, 100 - moral_diff)
+    # Mental Calculation
+    mental_score = ally.mental
+    total = (
+        0.45 * age_gender_sim +
+        0.35 * moral_sim + 
+        0.20 * mental_score
+    )
+    return total
+  
+  def choose_partners(self, population, max_group_size = 1): # max_group_size works on how many players can be picked for a group at a time
+    candidates = [
+      (self.score(p), p)
+      for p in population
+      if p is not self
+    ]
+    candidates.sort(key = lambda t: t[0], reverse = True)
+    chosen = [p for _, p in candidates[:max_group_size]]
+    return chosen
   def choose_violence(self, player): # chooses what action they take (punch, stab, choke, do nothing)
     # (<20<45 punch, <45<)
     # Morals 15%

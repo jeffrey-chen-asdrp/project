@@ -22,6 +22,7 @@
 - Obedience (80-100): Votes and acts accordingly with the majority, avoids conflict
 - Revenge tendency (80-100): Votes for people who voted against them
 - Physical (35-100): In a scuffle, dictates who will win
+- Morals (1-100): More likely to be hesitant be voting or not vote at all and to press button after one person is eliminated
 - Aggression (1-100): In scuffles, will be more likely to be the initializer in pushing others off, securing kills but lowering their trustworthiness
 
 - Every player will have a list of relationships with other players, with it being a numerical value. Trustworthiness will be 60% of the value, 15% charisma, while trait similarity will be the other 25%
