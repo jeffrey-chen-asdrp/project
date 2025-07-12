@@ -21,9 +21,15 @@ def sample_config():
         'strategies': {
             'all_cooperate': 1,
             'all_defect': 1,
-            'tit_for_tat': 1
+            'tit_for_tat': 1,
+            'tit_for_2_tat': 1,
+            '2tit_for_tat': 1,
+            'grudger': 1,
+            'pavlov': 1,
+            'random': 1
+
         },
-        'rounds': 5,
+        'rounds': 10,
         'payoffs': {
             'T': 5,
             'R': 3,
