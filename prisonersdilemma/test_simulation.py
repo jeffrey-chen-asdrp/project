@@ -12,6 +12,7 @@
 
 import pytest
 from simulation import SimulationFactory
+import matplotlib.pyplot as plt
 
 @pytest.fixture
 def sample_config():
@@ -22,7 +23,7 @@ def sample_config():
             'all_defect': 1,
             'tit_for_tat': 1
         },
-        'rounds': 3,
+        'rounds': 5,
         'payoffs': {
             'T': 5,
             'R': 3,
@@ -31,9 +32,9 @@ def sample_config():
         }
     }
 
-def test_verbose_simulation(sample_config):
+def test_verbose_simulation_with_chart(sample_config):
     sim = SimulationFactory.create_simulation(sample_config)
-    
+
     print("\n=== AGENT INITIALIZATION ===")
     for agent in sim.agents:
         print(f"{agent['id']} ({agent['type']}) initialized.")
@@ -63,8 +64,26 @@ def test_verbose_simulation(sample_config):
         score = agent['strategy'].score
         print(f"{aid}: Final Score = {score}")
 
-    # Basic correctness checks
+    # ✅ Plot cumulative scores
+    print("\nGenerating plot...")
+    scores = sim.results['scores']
+    agents = list(scores.keys())
+    rounds = list(range(1, len(next(iter(scores.values()))) + 1))
+
+    plt.figure(figsize=(10, 6))
+    for agent in agents:
+        plt.plot(rounds, scores[agent], label=agent, marker='o')
+
+    plt.xlabel("Round")
+    plt.ylabel("Cumulative Score")
+    plt.title("Agent Scores Over Rounds")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("agent_scores_chart.png")  # Save the chart as a file
+    plt.show()  # Also display if running interactively
+
+    # ✅ Basic assertions
     assert len(sim.results['rounds']) == sample_config['rounds']
     for agent in sim.agents:
         assert agent['strategy'].score >= 0
-
