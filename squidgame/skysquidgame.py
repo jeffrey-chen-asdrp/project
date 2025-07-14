@@ -291,7 +291,7 @@ class Round:
                 choice = random.choices(population=["obedience","similarity","charisma"], weights=[50*(1-(75-player.obedience)/100), 25*(1-(75-player.similarity_bias)/100), 25*(1-(75-player.charisma_bias)/100)])
 
               else:
-                choice = random.choices(population=["obedience","similarity"], weights=[60*(1-(75-player.obedience)/100), 40*(1-(75-player.similarity_bias)/100)])
+                choice = random.choices(population=["obedience","similarity"], weights=[70*(1-(75-player.obedience)/100), 3*(1-(75-player.similarity_bias)/100)])
             
             if choice[0] == "obedience":
               target = self.count_majority()
