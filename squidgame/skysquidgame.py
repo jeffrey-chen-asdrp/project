@@ -84,17 +84,20 @@ class Agent:
 class Round:
   def __init__(self, agents, time):
     self.agents = agents
-    self.voting = [] # {"player":player, "votes":[p2, p3]}
+    self.voting = [] # {"player":player, "votes":[p2, p3], "voted_for":player}
 
     self.time = time
 
     for agent in agents:
-      self.voting.append({"player":agent, "votes":[]})
+      self.voting.append({"player":agent, "votes":[], "voted_for":None})
 
   def vote(self, p1, p2): # p1 votes for p2
     for agent in self.voting:
       if agent["player"] == p2:
         agent["votes"].append(p1)
+
+      if agent["player"] == p1:
+        agent["voted_for"] = p2
 
     for relationship in p2.relationships:
       if relationship["player"] == p1:
@@ -268,11 +271,27 @@ class Round:
               print(f"Player {player.id} has voted for Player {target.id} due to their lack of similarity")
 
           else:
+            follower = self.get_charisma(player)
+
+            has_voted = follower in self.has_voted
+
+            for vote in self.voting:
+              if vote["player"] == follower:
+                charisma_target = vote["voted_for"]
+
             if was_voted:
-              choice = random.choices(population=["obedience","revenge","similarity","charisma"], weights=[65*(1-(75-player.obedience)/100), 15*(1-(75-player.revenge_tendency)/100), 10*(1-(75-player.similarity_bias)/100), 10*(1-(75-player.charisma_bias)/100)])
+              if has_voted and (player != charisma_target):
+                choice = random.choices(population=["obedience","revenge","similarity","charisma"], weights=[40*(1-(75-player.obedience)/100), 20*(1-(75-player.revenge_tendency)/100), 20*(1-(75-player.similarity_bias)/100), 20*(1-(75-player.charisma_bias)/100)])
+
+              else:
+                choice = random.choices(population=["obedience","revenge","similarity"], weights=[50*(1-(75-player.obedience)/100), 25*(1-(75-player.revenge_tendency)/100), 20*(1-(75-player.similarity_bias)/100)])
 
             else:
-              choice = random.choices(population=["obedience","similarity","charisma"], weights=[50*(1-(75-player.obedience)/100), 25*(1-(75-player.similarity_bias)/100), 25*(1-(75-player.charisma_bias)/100)])
+              if has_voted and (player != charisma_target):
+                choice = random.choices(population=["obedience","similarity","charisma"], weights=[50*(1-(75-player.obedience)/100), 25*(1-(75-player.similarity_bias)/100), 25*(1-(75-player.charisma_bias)/100)])
+
+              else:
+                choice = random.choices(population=["obedience","similarity"], weights=[60*(1-(75-player.obedience)/100), 40*(1-(75-player.similarity_bias)/100)])
             
             if choice[0] == "obedience":
               target = self.count_majority()
@@ -295,7 +314,9 @@ class Round:
               print(f"Player {player.id} has voted for Player {target.id} due to their lack of similarity")
 
             else: # charisma bias selected
-              target = self.get_charisma(player)
+              for vote in self.voting:
+                if vote["player"] == follower:
+                  target = vote["voted_for"]
 
               self.vote(player, target)
 
@@ -391,7 +412,7 @@ for i in range(8):
 survivors = players
 game_time = 45
 
-for i in range(1):
+for i in range(2):
   print(f"\nRound {i+1} starting...\n")  
 
   game = Round(players, game_time)
