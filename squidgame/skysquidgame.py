@@ -222,7 +222,7 @@ class Round:
         if end - start >= self.time * 2/3: # check if fight should happen
           chance = random.random()
 
-          if chance <= 35:
+          if chance <= 50:
             fight = True
 
             break
@@ -260,6 +260,7 @@ class Round:
 
               self.vote(player, target)
 
+              print(f"Player {player.id} has voted for Player {target.id} as an act of revenge")
 
             else: # similarity selected
               self.vote(player, target)
@@ -290,7 +291,6 @@ class Round:
 
             elif choice[0] == "similarity": # similarity bias selected
               self.vote(player, target)
-
 
               print(f"Player {player.id} has voted for Player {target.id} due to their lack of similarity")
 
