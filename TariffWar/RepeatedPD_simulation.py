@@ -17,7 +17,7 @@ PD_PAYOFFS = {
 class TitForTatAgent:
     def __init__(self, name):
         self.name = name
-        self.last_opponent_action = TARIFF_LOW  # Start nice
+        self.last_opponent_action = TARIFF_HIGH # Start nice
         self.history = []
         self.total_payoff = 0
 
@@ -56,8 +56,10 @@ class AlwaysCoopAgent:
         self.history.append((my_action, opponent_action, payoff))
         self.total_payoff += payoff
 
+
 class QLearningAgent:
-    def __init__(self, name, alpha=0.1, gamma=0.95, epsilon=0.1):
+    def __init__(self, name, epsilon=0.1, gamma=0.9, alpha=0.1):
+        #episilon : Exploration rate, gamma : High means long term, alpha : learning rate
         self.name = name
         self.alpha = alpha
         self.gamma = gamma
@@ -66,8 +68,13 @@ class QLearningAgent:
             "C": {"C": 0.0, "D": 0.0},
             "D": {"C": 0.0, "D": 0.0},
         }
+        self.q_history = {
+            "C": {"C": [], "D": []},
+            "D": {"C": [], "D": []},
+        }
         self.last_action = None
-        self.last_state = TARIFF_LOW
+        #self.last_state = TARIFF_LOW #Nice
+        self.last_state =TARIFF_HIGH #Not nice
         self.history = []
         self.total_payoff = 0
 
@@ -91,11 +98,16 @@ class QLearningAgent:
         self.history.append((my_action, opponent_action, reward))
         self.total_payoff += reward
 
+        # Record Q-values for plotting
+        for state in ["C", "D"]:
+            for action in ["C", "D"]:
+                self.q_history[state][action].append(self.q_table[state][action])
+
 
 class RepeatedTariffPD(SocialDilemmaSimulation):
     def initialize_agents(self):
-        self.us = TitForTatAgent("USA")
-        self.china = QLearningAgent("China")
+        self.us = QLearningAgent("USA")
+        self.china = TitForTatAgent("China")
         self.agents = [self.us, self.china]
 
     def run_round(self):
@@ -123,4 +135,5 @@ class RepeatedTariffPD(SocialDilemmaSimulation):
     def calculate_final_stats(self):
         self.results["leader_total_payoff"] = self.us.total_payoff
         self.results["follower_total_payoff"] = self.china.total_payoff
+
 
