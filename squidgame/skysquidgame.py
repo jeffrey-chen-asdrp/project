@@ -54,16 +54,17 @@ class Agent:
 
     return similarity
   
-  def calc_trust_voting(self):
+  def calc_trust_voting(self, all_players):
     players = []
     values = []
 
     for relationship in self.relationships:
-      trust = relationship["trust"]
-      morals = relationship["player"].morals
+      if relationship["player"] in all_players:
+        trust = relationship["trust"]
+        morals = relationship["player"].morals
 
-      values.append(0.8 * trust + 0.2 * morals)
-      players.append(relationship["player"])
+        values.append(0.8 * trust + 0.2 * morals)
+        players.append(relationship["player"])
 
     index = values.index(min(values))
 
@@ -289,7 +290,7 @@ class Round:
               print(f"Player {player.id} has voted for Player {target.id} as an act of revenge")
 
             elif choice[0] == "trust":
-              target = player.calc_trust_voting()
+              target = player.calc_trust_voting(players)
 
               self.vote(player, target)
 
@@ -339,7 +340,7 @@ class Round:
               print(f"Player {player.id} has voted for Player {target.id} as an act of revenge")
 
             elif choice[0] == "trust":
-              target = player.calc_trust_voting()
+              target = player.calc_trust_voting(players)
 
               self.vote(player, target)
 
@@ -417,7 +418,7 @@ print("Generating agent traits...\n")
 
 time.sleep(0.3)
 
-for i in range(10):
+for i in range(8):
   # id, age, gender, physical, charisma, obedience, revenge_tendency, similarity_bias, charisma_bias, indecisiveness, morals, aggression
 
   age = random.randint(18, 70)
@@ -450,7 +451,7 @@ for i in range(10):
 survivors = players
 game_time = 100
 
-for i in range(7):
+for i in range(3):
   print(f"\nRound {i+1} starting...\n")  
 
   game = Round(players, i+1, game_time)
