@@ -51,3 +51,23 @@
 
 
 NOTE: FOR EVERY GAME, CODE THE BASIC MECHANICS AND RUN SIMULATIONS. OUTPUT THESE ONTO CSV FILES WITH THE FACTORS AND THEN USE AI TO DICTATE BEST TRAITS AND CONTINUE SIMULATING
+
+
+
+
+# SIMULATIONS
+
+Effective traits:
+- Morals
+
+Wanted effective traits:
+- Voting behavior
+
+
+
+
+Obedience: avg. rounds = 1
+Revenge tendency avg. rounds = 2.5
+Trust voting avg. rounds = 3
+Similarity voting avg. rounds = 3.1
+Charisma voting avg. rounds = 3.5

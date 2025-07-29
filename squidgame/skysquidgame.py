@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random
+import math
 import time
 
 class Agent:
@@ -279,7 +280,7 @@ class Round:
           
           if player == self.count_majority(): # revenge 40% trust voting 40% similarity 20%
             # formula = random.choices(population=["P1","P2"], weights=[80*(1-(avg-value))])
-            choice = random.choices(population=["revenge","trust", "similarity"], weights=[40*(1-(75-player.revenge_tendency)/100), 40*(1-(75-player.trust_voting)/100), 20*(1-(75-player.similarity_bias)/100)])
+            choice = random.choices(population=["revenge","trust", "similarity"], weights=[40*(1-(50-player.revenge_tendency)/100), 40*(1-(50-player.trust_voting)/100), 20*(1-(50-player.similarity_bias)/100)])
             
             if choice[0] == "revenge" and was_voted: # selected revenge 
               targets = self.get_revenge(player)
@@ -312,17 +313,17 @@ class Round:
 
             if was_voted:
               if has_voted and (player != charisma_target):
-                choice = random.choices(population=["obedience","trust","revenge","similarity","charisma"], weights=[35*(1-(75-player.obedience)/100), 35*(1-(75-player.trust_voting)/100), 15*(1-(75-player.revenge_tendency)/100), 5*(1-(75-player.similarity_bias)/100), 10*(1-(75-player.charisma_bias)/100)])
+                choice = random.choices(population=["obedience","trust","revenge","similarity","charisma"], weights=[35*(1-(50-player.obedience)/100), 35*(1-(50-player.trust_voting)/100), 15*(1-(50-player.revenge_tendency)/100), 5*(1-(50-player.similarity_bias)/100), 10*(1-(50-player.charisma_bias)/100)])
 
               else:
-                choice = random.choices(population=["obedience","trust","revenge","similarity"], weights=[35*(1-(75-player.obedience)/100), 35*(1-(75-player.trust_voting)/100), 20*(1-(75-player.revenge_tendency)/100), 10*(1-(75-player.similarity_bias)/100)])
+                choice = random.choices(population=["obedience","trust","revenge","similarity"], weights=[35*(1-(50-player.obedience)/100), 35*(1-(50-player.trust_voting)/100), 20*(1-(50-player.revenge_tendency)/100), 10*(1-(50-player.similarity_bias)/100)])
 
             else:
               if has_voted and (player != charisma_target):
-                choice = random.choices(population=["obedience","trust","similarity","charisma"], weights=[35*(1-(75-player.obedience)/100), 35*(1-(75-player.trust_voting)/100), 15*(1-(75-player.similarity_bias)/100), 15*(1-(75-player.charisma_bias)/100)])
+                choice = random.choices(population=["obedience","trust","similarity","charisma"], weights=[35*(1-(50-player.obedience)/100), 35*(1-(50-player.trust_voting)/100), 15*(1-(50-player.similarity_bias)/100), 15*(1-(50-player.charisma_bias)/100)])
 
               else:
-                choice = random.choices(population=["obedience","trust","similarity"], weights=[40*(1-(75-player.obedience)/100), 40*(1-(75-player.trust_voting)/100), 20*(1-(75-player.similarity_bias)/100)])
+                choice = random.choices(population=["obedience","trust","similarity"], weights=[40*(1-(50-player.obedience)/100), 40*(1-(50-player.trust_voting)/100), 20*(1-(50-player.similarity_bias)/100)])
             
             if choice[0] == "obedience":
               target = self.count_majority()
@@ -424,14 +425,14 @@ for i in range(8):
   age = random.randint(18, 70)
   gender = random.choice(["Male", "Female"])
 
-  physical = random.randint(20, 100)
+  physical = random.randint(1, 100)
 
-  charisma = random.randint(50, 100)
-  obedience = random.randint(50, 100)
-  revenge_tendency = random.randint(50, 100)
-  trust_voting = random.randint(50, 100)
-  similarity_bias = random.randint(50, 100)
-  charisma_bias = random.randint(50, 100)
+  charisma = random.randint(1, 100)
+  obedience = random.randint(1, 100)
+  revenge_tendency = random.randint(1, 100)
+  trust_voting = random.randint(1, 100)
+  similarity_bias = random.randint(1, 100)
+  charisma_bias = random.randint(1, 100)
 
   indecisiveness = random.randint(1, 100)
   
