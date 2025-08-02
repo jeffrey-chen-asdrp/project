@@ -106,8 +106,8 @@ class QLearningAgent:
 
 class RepeatedTariffPD(SocialDilemmaSimulation):
     def initialize_agents(self):
-        self.us = QLearningAgent("USA")
-        self.china = TitForTatAgent("China")
+        self.us = QLearningAgent("USA",0.1,0.9,0.1)
+        self.china = QLearningAgent("China",0.1,0.9,0.1)
         self.agents = [self.us, self.china]
 
     def run_round(self):
