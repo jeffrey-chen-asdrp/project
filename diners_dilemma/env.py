@@ -9,8 +9,8 @@ class DinersDilemmaRLEnv(MultiAgentEnv):
         self._num_agents = cfg.get("num_agents", 10)
         self._max_steps = cfg.get("max_steps", 200)
 
-        self.dish_rewards = [8, 8]
-        self.dish_costs = [2, 6]
+        self.dish_rewards = [cfg.get("b"), cfg.get("a")]  # cheap reward b, a
+        self.dish_costs   = [cfg.get("l"), cfg.get("k")]  # cheap cost l, k
         self.step_count = 0
 
         self.agents = [f"agent_{i}" for i in range(self._num_agents)]
