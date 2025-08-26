@@ -8,31 +8,55 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Test parameter sets for Diner's Dilemma
-# Requirements: k - l > a - b, a - k/n > b - l/n
+# Requirements (assumes default n=10): 
+# k - l > a - b (social: cheap better than expensive (rearranged: b - l > a - k))
+# a - k/n > b - l/n (individual: expensive better than cheap, assuming n=10 by default)
+# a = expensive meal reward
+# b = cheap meal reward  
+# k = expensive meal cost
+# l = cheap meal cost
 TEST_SETS = [
-    # Set 1: Baseline (moderate dilemma)
+    Baseline (moderate dilemma)
     {"name": "Baseline", "a": 6, "b": 4, "k": 7, "l": 2},
     
-    # Set 2: Strong dilemma (larger cost difference)
+    Strong dilemma (larger cost difference)
     {"name": "Strong_Dilemma", "a": 7, "b": 4, "k": 12, "l": 2},
     
-    # Set 3: Weak dilemma (smaller cost difference)
+    Weak dilemma (smaller cost difference)
     {"name": "Weak_Dilemma", "a": 5, "b": 4, "k": 6, "l": 2},
     
-    # Set 4: High rewards (scaled up rewards)
+    High rewards (scaled up rewards)
     {"name": "High_Rewards", "a": 12, "b": 4, "k": 15, "l": 2},
     
-    # Set 5: Low rewards (scaled down)
+    Low rewards (scaled down)
     {"name": "Low_Rewards", "a": 3, "b": 4, "k": 8, "l": 2},
     
-    # Set 6: Low Cheap Cost
+    Low Cheap Cost
     {"name": "Low_Cheap_Cost", "a": 8, "b": 6, "k": 9, "l": 1},
     
-    # Set 7: High cheap meal reward
+    High cheap meal reward
     {"name": "High_Cheap_Reward", "a": 9, "b": 7, "k": 10, "l": 3},
     
-    # Set 8: Extreme dilemma
+    Extreme dilemma
     {"name": "Extreme_Dilemma", "a": 10, "b": 3, "k": 25, "l": 1},
+
+    # Nearly at the social-boundary: k-l is only just larger than a-b (tests sensitivity when social preference for cheap is marginal)
+    {"name": "Nearly_Boundary_Social", "a": 8.0, "b": 5.0, "k": 5.01, "l": 2.0},
+
+    # Nearly at the individual-boundary: a - k/n is only just larger than b - l/n (tests very small individual incentive to defect)
+    {"name": "Nearly_Boundary_Individual", "a": 6.0, "b": 4.0, "k": 21.9, "l": 2.0},
+
+    # Small-N sensitive: satisfies inequalities for n=10 but flips for small n (e.g. n=3) (useful to test how num_agents changes incentives)
+    {"name": "Small_N_Sensitive", "a": 6.0, "b": 4.0, "k": 9.0, "l": 2.0},
+
+    # Low rewards / negative per-dish net: both dishes can have negative net but still meet reqs (tests pathological cases where individual still prefers expensive)
+    {"name": "Low_Rewards_Negative_Net", "a": 3.0, "b": 2.0, "k": 7.0, "l": 4.0},
+
+    # Fractional / tiny differences: very small decimal gaps to test numerical stability
+    {"name": "Fractional_Small_Diff", "a": 5.0, "b": 4.6, "k": 1.41, "l": 1.0},
+
+    # Almost tie on social welfare (tiny margin) — another social-boundary variant
+    {"name": "Almost_Tie_Social", "a": 5.0, "b": 3.0, "k": 8.01, "l": 6.0},
 ]
 
 def verify_dilemma_conditions(a, b, k, l, n):
